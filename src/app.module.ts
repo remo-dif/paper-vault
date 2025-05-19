@@ -15,7 +15,7 @@ import { PapersModule } from './papers/papers.module';
       password: 'postgres',
       database: 'postgres',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,  
+      synchronize: true,
       logging: true,
     }),
   ],
