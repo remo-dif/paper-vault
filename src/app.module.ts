@@ -8,15 +8,14 @@ import { PapersModule } from './papers/papers.module';
   imports: [
     PapersModule,
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'postgres',
-      database: 'postgres',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-      logging: true,
+      type: process.env.TYPEORM_TYPE as any,
+      url: process.env.TYPEORM_URL,
+      host: process.env.TYPEORM_HOST || 'localhost', // resolves to "db" in Docker
+      username: process.env.TYPEORM_USERNAME,
+      password: process.env.TYPEORM_PASSWORD,
+      database: process.env.TYPEORM_DATABASE,
+      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+      synchronize: process.env.TYPEORM_SYNCHRONIZE === 'true',
     }),
   ],
   controllers: [AppController],

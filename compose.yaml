@@ -1,32 +1,38 @@
-version: '3.8'
-
+# Environment variables for the application
 services:
-  db:
-    image: postgres
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgres
-      - POSTGRES_PASSWORD=postgres
-    container_name: postgres
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
-
-  app:
+  api:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: nest-docker-postgres
     environment:
-      - PORT=${PORT}
+      - PORT=3000
+      - TYPEORM_HOST=db
+      - TYPEORM_USERNAME=postgres
+      - TYPEORM_PASSWORD=postgres
+      - TYPEORM_DATABASE=postgres
+      - TYPEORM_PORT=5432
+      - TYPEORM_TYPE=postgres
+      - TYPEORM_SYNCHRONIZE=true
     ports:
       - '3000:3000'
     depends_on:
       - db
     volumes:
       - ./src:/app/src
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    container_name: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4

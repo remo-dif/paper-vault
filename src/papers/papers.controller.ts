@@ -16,7 +16,9 @@ import { UpdatePaperDto } from './update-paper.dto';
 
 @Controller('papers')
 export class PapersController {
+  
   constructor(private readonly papersService: PapersService) {}
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createPaperDto: CreatePaperDto): Promise<Paper> {

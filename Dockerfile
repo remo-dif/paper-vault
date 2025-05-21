@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Copy the .env and .env.development files
-# COPY .env .env.development ./
+COPY .env ./
 
 # Creates a "dist" folder with the production build
 RUN npm run build
@@ -23,4 +23,4 @@ RUN npm run build
 EXPOSE 3001
 
 # Start the server using the production build
-CMD ["npm", "run", "start:prod"]
+CMD ["npm", "run", "start:dev"]

@@ -60,6 +60,9 @@ export class PapersService {
   }
 
   async findByAuthor(author: string): Promise<Paper[]> {
-    return this.paperRepository.find({ where: { authors: author } });
+    return this.paperRepository
+      .createQueryBuilder('paper')
+      .where(':author = ANY(paper.authors)', { author })
+      .getMany();
   }
 }
