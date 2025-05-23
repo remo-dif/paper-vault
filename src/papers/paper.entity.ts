@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -13,29 +12,25 @@ export class Paper {
   id: string;
 
   @Column({ length: 255 })
-  @Index()
   title: string;
 
   @Column('text')
   abstract: string;
 
-  @Column({ length: 255 })
-  authors: string;
-
-  @Column({ type: 'date', nullable: true })
-  publicationDate?: Date;
+  @Column('simple-array')
+  authors: string[];
 
   @Column({ length: 255, nullable: true })
-  journal?: string;
+  venue?: string;
 
-  @Column({ length: 100, nullable: true, unique: true })
-  doi?: string;
+  @Column({ type: 'int', nullable: true })
+  year?: number;
 
-  @Column({ length: 255, nullable: true })
-  url?: string;
+  @Column({ type: 'int', default: 0 })
+  n_citation: number;
 
-  @Column({ default: false })
-  isPublished: boolean;
+  @Column('simple-array', { nullable: true })
+  references: string[];
 
   @CreateDateColumn()
   createdAt: Date;

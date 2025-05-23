@@ -12,7 +12,7 @@ describe('PapersController', () => {
   const mockPaper: Paper = {
     id: '1',
     title: 'Test Paper',
-    authors: 'Author',
+    authors: ['Author'],
     abstract: 'abstract',
   } as Paper;
 
@@ -44,7 +44,7 @@ describe('PapersController', () => {
     it('should call service.create and return a paper', async () => {
       const dto: CreatePaperDto = {
         title: 'Test',
-        authors: 'Author',
+        authors: ['Author'],
         abstract: 'abstract',
       };
       await expect(controller.create(dto)).resolves.toEqual(mockPaper);
