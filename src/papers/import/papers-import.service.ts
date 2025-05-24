@@ -19,7 +19,7 @@ export class PapersImportService {
     const fullPath = join(process.cwd(), csvFilePath);
     const papers: Partial<Paper>[] = [];
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       fs.createReadStream(fullPath)
         .pipe(csv())
         .on('data', (row) => {
@@ -29,46 +29,60 @@ export class PapersImportService {
               title: row.title,
               abstract: row.abstract,
               venue: row.venue,
-              year: parseInt(row.year) || undefined,
-              n_citation: parseInt(row.n_citation) || 0,
+              year: this.safeParseInt(row.year),
+              n_citation: this.safeParseInt(row.n_citation, 0),
               authors: this.parseJsonArray(row.authors),
               references: this.parseJsonArray(row.references),
             });
-          } catch (error) {
+          } catch (error: any) {
             this.logger.error(`Failed to parse row: ${error.message}`);
           }
         })
         .on('end', async () => {
           this.logger.log(`Parsed ${papers.length} papers. Saving to DB...`);
-
-          for (const paper of papers) {
-            const exists = await this.paperRepository.findOneBy({
-              id: paper.id,
-            });
-            if (!exists) {
-              await this.paperRepository.save(paper);
+          try {
+            for (const paper of papers) {
+              const exists = await this.paperRepository.findOneBy({ id: paper.id });
+              if (!exists) {
+                await this.paperRepository.save(paper);
+              }
             }
+            this.logger.log('Import completed.');
+            resolve();
+          } catch (err: any) {
+            this.logger.error(`Error saving papers: ${err.message}`);
+            reject(err);
           }
-
-          this.logger.log('Import completed.');
-          resolve();
         })
-        .on('error', (err) => reject(err));
+        .on('error', (err) => {
+          this.logger.error(`Stream error: ${err.message}`);
+          reject(err);
+        });
     });
   }
 
   private parseJsonArray(raw: string): string[] {
     if (!raw || raw.trim() === '') return [];
-
     try {
+      // Try to parse as JSON array first
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed.map((item) => String(item).trim()).filter(Boolean);
+      }
+    } catch {
+      // Fallback: try to split manually
       const cleaned = raw.replace(/^\s*\[|\]\s*$/g, '');
-
       return cleaned
         .split(',')
-        .map((item) => item.replace(/['"]/g, '').trim()) // remove quotes and trim
-        .filter(Boolean); // remove empty values
-    } catch {
-      return [];
+        .map((item) => item.replace(/['"]/g, '').trim())
+        .filter(Boolean);
     }
+    return [];
+  }
+
+  private safeParseInt(value: any, defaultValue: number | undefined = undefined): number | undefined {
+    const parsed = parseInt(value, 10);
+    if (isNaN(parsed)) return defaultValue;
+    return parsed;
   }
 }
