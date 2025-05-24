@@ -14,7 +14,7 @@ export class Paper {
   @Column({ length: 255 })
   title: string;
 
-  @Column('text')
+  @Column({ length: 255, nullable: true })
   abstract: string;
 
   @Column('simple-array')
