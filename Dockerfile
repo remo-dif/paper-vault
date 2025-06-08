@@ -1,27 +1,39 @@
-# Base image
-FROM node:latest
+# Use Node.js 18 image as the base for the development stage
+FROM node:18 AS dev
 
-# Create app directory
+# Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# Copy package.json and package-lock.json for dependency installation
 COPY package*.json ./
 
-# Install app dependencies
+# Set environment variable for development
+ENV NODE_ENV=development
+
+# Install dependencies
 RUN npm install
 
-# Bundle app source
+# Copy the rest of the application source code
 COPY . .
 
-# Copy environment variables and data files
-COPY .env .
-COPY papers.csv .
-
-# Creates a "dist" folder with the production build
+# Build the application
 RUN npm run build
 
-# Expose the port on which the app will run
+# Use Node.js 18 image as the base for the production stage
+FROM node:18 AS production
+
+# Set build argument and environment variable for production
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+
+# Set the working directory inside the container
+WORKDIR /usr/src/app
+
+# Copy built files and dependencies from the development stage
+COPY --from=dev /usr/src/app/ .
+
+# Expose port 8080 for the application
 EXPOSE 8080
 
-# Run the app
-CMD [ "node", "--nolazy", "dist/main" ]
+# Start the application
+CMD [ "node", "dist/main" ]

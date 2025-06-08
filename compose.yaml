@@ -1,29 +1,32 @@
+version: "3.9"
 services:
   api:
     build:
-      dockerfile: Dockerfile
       context: .
+      dockerfile: Dockerfile
+      target: dev
     volumes:
-      - ./src:/app/src
-    command: npm run start:debug
-    depends_on: 
-      - postgres
-    environment: 
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "8080:3000"
+      - "9229:9229"
+    environment:
       DATABASE_URL: postgres://user:password@postgres:5432/db
       NODE_ENV: development
-      PORT: 3000
-    ports:
-      - 8080:3000
-      # debugging port
-      - 9229:9229
+    depends_on:
+      - postgres
+    command: npm run start:debug
+
   postgres:
     image: postgres
-    environment: 
+    environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: db
     ports:
-      - 5432:5432
+      - "5432:5432"
+
   pgadmin:
     image: dpage/pgadmin4
     restart: always
@@ -32,6 +35,6 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: pgadmin4
     ports:
-      - 5050:80
+      - "5050:80"
     depends_on:
       - postgres
