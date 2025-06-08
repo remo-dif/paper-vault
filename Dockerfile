@@ -19,6 +19,9 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# Start the application 
+CMD ["ts-node-dev", "--respawn", "--transpile-only", "--inspect=0.0.0.0:9229", "src/main.ts"]
+
 # Use Node.js 18 image as the base for the production stage
 FROM node:18 AS production
 
