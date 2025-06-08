@@ -9,6 +9,7 @@ COPY package*.json ./
 
 # Set environment variable for development
 ENV NODE_ENV=development
+ENV CHOKIDAR_USEPOLLING=true
 
 # Install dependencies
 RUN npm install
@@ -20,7 +21,7 @@ COPY . .
 RUN npm run build
 
 # Start the application 
-CMD ["ts-node-dev", "--respawn", "--transpile-only", "--inspect=0.0.0.0:9229", "src/main.ts"]
+CMD ["ts-node-dev", "-L", "--respawn", "--transpile-only", "--inspect=0.0.0.0:9229", "src/main.ts"]
 
 # Use Node.js 18 image as the base for the production stage
 FROM node:18 AS production
