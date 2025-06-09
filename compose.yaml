@@ -18,6 +18,15 @@ services:
     depends_on:
       - postgres
     command: npm run start:debug
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./src
+          target:  /usr/src/app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
 
   postgres:
     image: postgres
