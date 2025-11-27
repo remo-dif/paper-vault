@@ -1,4 +1,4 @@
-import { AppService } from "./app.service";
+import { AppService } from './app.service';
 
 describe('AppService', () => {
   let appService: AppService;
@@ -14,5 +14,4 @@ describe('AppService', () => {
   it('should return "Hello World!"', () => {
     expect(appService.getHello()).toBe('Hello World!');
   });
-
 });

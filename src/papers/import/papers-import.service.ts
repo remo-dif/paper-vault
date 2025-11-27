@@ -42,7 +42,9 @@ export class PapersImportService {
           this.logger.log(`Parsed ${papers.length} papers. Saving to DB...`);
           try {
             for (const paper of papers) {
-              const exists = await this.paperRepository.findOneBy({ id: paper.id });
+              const exists = await this.paperRepository.findOneBy({
+                id: paper.id,
+              });
               if (!exists) {
                 await this.paperRepository.save(paper);
               }
@@ -80,7 +82,10 @@ export class PapersImportService {
     return [];
   }
 
-  private safeParseInt(value: any, defaultValue: number | undefined = undefined): number | undefined {
+  private safeParseInt(
+    value: any,
+    defaultValue: number | undefined = undefined,
+  ): number | undefined {
     const parsed = parseInt(value, 10);
     if (isNaN(parsed)) return defaultValue;
     return parsed;
