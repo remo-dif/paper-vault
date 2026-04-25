@@ -8,12 +8,17 @@ import { UpdatePaperDto } from './update-paper.dto';
 describe('PapersController', () => {
   let controller: PapersController;
   let service: PapersService;
+  const mockId = '4ab3735c-80f1-472d-b953-fa0557fed28b';
 
   const mockPaper: Paper = {
-    id: '1',
+    id: mockId,
     title: 'Test Paper',
     authors: ['Author'],
     abstract: 'abstract',
+    nCitation: 0,
+    references: [],
+    createdAt: new Date('2026-01-01T00:00:00.000Z'),
+    updatedAt: new Date('2026-01-01T00:00:00.000Z'),
   } as Paper;
 
   const mockPapersService = {
@@ -73,26 +78,26 @@ describe('PapersController', () => {
 
   describe('findOne', () => {
     it('should return a single paper by id', async () => {
-      await expect(controller.findOne('1')).resolves.toEqual(mockPaper);
-      expect(service.findOne).toHaveBeenCalledWith('1');
+      await expect(controller.findOne({ id: mockId })).resolves.toEqual(mockPaper);
+      expect(service.findOne).toHaveBeenCalledWith(mockId);
     });
   });
 
   describe('update', () => {
     it('should update and return the paper', async () => {
       const dto: UpdatePaperDto = { title: 'Updated Title' };
-      await expect(controller.update('1', dto)).resolves.toEqual({
+      await expect(controller.update({ id: mockId }, dto)).resolves.toEqual({
         ...mockPaper,
         title: 'Updated Title',
       });
-      expect(service.update).toHaveBeenCalledWith('1', dto);
+      expect(service.update).toHaveBeenCalledWith(mockId, dto);
     });
   });
 
   describe('remove', () => {
     it('should call service.remove and return void', async () => {
-      await expect(controller.remove('1')).resolves.toBeUndefined();
-      expect(service.remove).toHaveBeenCalledWith('1');
+      await expect(controller.remove({ id: mockId })).resolves.toBeUndefined();
+      expect(service.remove).toHaveBeenCalledWith(mockId);
     });
   });
 });

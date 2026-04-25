@@ -1,19 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import * as csv from 'csv-parser';
 import { createReadStream } from 'node:fs';
 import { resolve } from 'node:path';
-import { Repository } from 'typeorm';
 import { Paper } from '../paper.entity';
+import { PapersRepository } from '../papers.repository';
 
 @Injectable()
 export class PapersImportService {
   private readonly logger = new Logger(PapersImportService.name);
 
-  constructor(
-    @InjectRepository(Paper)
-    private readonly paperRepository: Repository<Paper>,
-  ) {}
+  constructor(private readonly papersRepository: PapersRepository) {}
 
   async runImport(csvFilePath: string, batchSize = 500): Promise<void> {
     const fullPath = this.resolveImportPath(csvFilePath);
@@ -69,7 +65,7 @@ export class PapersImportService {
       return;
     }
 
-    await this.paperRepository.upsert(batch, ['id']);
+    await this.papersRepository.upsertMany(batch);
     batch.length = 0;
   }
 

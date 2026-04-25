@@ -10,9 +10,14 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
 import { CreatePaperDto } from './create-paper.dto';
-import { ListPapersDto, PaginatedPapersDto } from './list-papers.dto';
-import { Paper } from './paper.entity';
+import { ListPapersDto } from './list-papers.dto';
+import { PaperIdParamDto } from './paper-id-param.dto';
+import {
+  PaginatedPapersResponseDto,
+  PaperResponseDto,
+} from './paper-response.dto';
 import { PapersService } from './papers.service';
 import { UpdatePaperDto } from './update-paper.dto';
 
@@ -22,31 +27,49 @@ export class PapersController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createPaperDto: CreatePaperDto): Promise<Paper> {
-    return this.papersService.create(createPaperDto);
+  async create(@Body() createPaperDto: CreatePaperDto): Promise<PaperResponseDto> {
+    const paper = await this.papersService.create(createPaperDto);
+    return this.toPaperResponse(paper);
   }
 
   @Get()
-  findAll(@Query() query: ListPapersDto): Promise<PaginatedPapersDto<Paper>> {
-    return this.papersService.findAll(query);
+  async findAll(@Query() query: ListPapersDto): Promise<PaginatedPapersResponseDto> {
+    const result = await this.papersService.findAll(query);
+
+    return plainToInstance(
+      PaginatedPapersResponseDto,
+      {
+        ...result,
+        data: result.data.map((paper) => this.toPaperResponse(paper)),
+      },
+      { excludeExtraneousValues: true },
+    );
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Paper> {
-    return this.papersService.findOne(id);
+  async findOne(@Param() params: PaperIdParamDto): Promise<PaperResponseDto> {
+    const paper = await this.papersService.findOne(params.id);
+    return this.toPaperResponse(paper);
   }
 
   @Put(':id')
-  update(
-    @Param('id') id: string,
+  async update(
+    @Param() params: PaperIdParamDto,
     @Body() updatePaperDto: UpdatePaperDto,
-  ): Promise<Paper> {
-    return this.papersService.update(id, updatePaperDto);
+  ): Promise<PaperResponseDto> {
+    const paper = await this.papersService.update(params.id, updatePaperDto);
+    return this.toPaperResponse(paper);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string): Promise<void> {
-    return this.papersService.remove(id);
+  remove(@Param() params: PaperIdParamDto): Promise<void> {
+    return this.papersService.remove(params.id);
+  }
+
+  private toPaperResponse(paper: unknown): PaperResponseDto {
+    return plainToInstance(PaperResponseDto, paper, {
+      excludeExtraneousValues: true,
+    });
   }
 }

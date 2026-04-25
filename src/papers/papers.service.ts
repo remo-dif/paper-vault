@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
 import { CreatePaperDto } from './create-paper.dto';
 import { ListPapersDto, PaginatedPapersDto } from './list-papers.dto';
 import { Paper } from './paper.entity';
+import { PapersRepository } from './papers.repository';
 import { UpdatePaperDto } from './update-paper.dto';
 
 /**
@@ -22,43 +21,14 @@ import { UpdatePaperDto } from './update-paper.dto';
  */
 @Injectable()
 export class PapersService {
-  constructor(
-    @InjectRepository(Paper)
-    private readonly paperRepository: Repository<Paper>,
-  ) {}
+  constructor(private readonly papersRepository: PapersRepository) {}
 
   async findAll(query: ListPapersDto): Promise<PaginatedPapersDto<Paper>> {
-    const limit = query.limit ?? 25;
-    const offset = query.offset ?? 0;
-
-    if (query.author) {
-      const qb = this.paperRepository
-        .createQueryBuilder('paper')
-        .where(':author = ANY(paper.authors)', { author: query.author })
-        .orderBy('paper.createdAt', 'DESC')
-        .take(limit)
-        .skip(offset);
-
-      if (query.title) {
-        qb.andWhere('paper.title ILIKE :title', { title: `%${query.title}%` });
-      }
-
-      const [data, total] = await qb.getManyAndCount();
-      return { data, limit, offset, total };
-    }
-
-    const [data, total] = await this.paperRepository.findAndCount({
-      where: query.title ? { title: ILike(`%${query.title}%`) } : {},
-      order: { createdAt: 'DESC' },
-      take: limit,
-      skip: offset,
-    });
-
-    return { data, limit, offset, total };
+    return this.papersRepository.findPage(query);
   }
 
   async findOne(id: string): Promise<Paper> {
-    const paper = await this.paperRepository.findOne({ where: { id } });
+    const paper = await this.papersRepository.findById(id);
     if (!paper) {
       throw new NotFoundException(`Paper with ID ${id} not found`);
     }
@@ -66,33 +36,29 @@ export class PapersService {
   }
 
   async create(paper: CreatePaperDto): Promise<Paper> {
-    const newPaper = this.paperRepository.create(paper);
-    return this.paperRepository.save(newPaper);
+    return this.papersRepository.create(paper);
   }
 
   async update(id: string, updatePaperDto: UpdatePaperDto): Promise<Paper> {
-    const result = await this.paperRepository.update(id, updatePaperDto);
-    if (result.affected === 0) {
+    const updated = await this.papersRepository.update(id, updatePaperDto);
+    if (!updated) {
       throw new NotFoundException(`Paper with ID ${id} not found`);
     }
     return this.findOne(id);
   }
 
   async remove(id: string): Promise<void> {
-    const result = await this.paperRepository.delete(id);
-    if (result.affected === 0) {
+    const deleted = await this.papersRepository.delete(id);
+    if (!deleted) {
       throw new NotFoundException(`Paper with ID ${id} not found`);
     }
   }
 
   async findByTitle(title: string): Promise<Paper[]> {
-    return this.paperRepository.find({ where: { title } });
+    return this.papersRepository.findByTitle(title);
   }
 
   async findByAuthor(author: string): Promise<Paper[]> {
-    return this.paperRepository
-      .createQueryBuilder('paper')
-      .where(':author = ANY(paper.authors)', { author })
-      .getMany();
+    return this.papersRepository.findByAuthor(author);
   }
 }

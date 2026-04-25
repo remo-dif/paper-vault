@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { PapersRepository } from '../papers.repository';
 import { PapersImportService } from './papers-import.service';
 
 describe('PapersImportService', () => {
@@ -9,9 +10,9 @@ describe('PapersImportService', () => {
       providers: [
         PapersImportService,
         {
-          provide: 'PaperRepository',
+          provide: PapersRepository,
           useValue: {
-            upsert: jest.fn(),
+            upsertMany: jest.fn(),
           },
         },
       ],

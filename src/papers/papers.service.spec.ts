@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PapersService } from './papers.service';
+import { PapersRepository } from './papers.repository';
 
 describe('PapersService', () => {
   let service: PapersService;
@@ -9,15 +10,16 @@ describe('PapersService', () => {
       providers: [
         PapersService,
         {
-          provide: 'PaperRepository',
+          provide: PapersRepository,
           useValue: {
-            find: jest.fn(), // Mock implementation
-            findOne: jest.fn(), // Mock implementation
+            findPage: jest.fn(), // Mock implementation
+            findById: jest.fn(), // Mock implementation
             create: jest.fn(), // Mock implementation
-            save: jest.fn(), // Mock implementation
             update: jest.fn(), // Mock implementation
             delete: jest.fn(), // Mock implementation
-          }, // Provide a mock implementation as needed
+            findByTitle: jest.fn(), // Mock implementation
+            findByAuthor: jest.fn(), // Mock implementation
+          },
         },
       ],
     }).compile();
