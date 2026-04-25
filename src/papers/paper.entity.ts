@@ -10,16 +10,16 @@ import { DEFAULT_CITATION_COUNT } from './papers.constants';
 @Entity('papers')
 export class Paper {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ type: 'text' })
-  title: string;
+  title!: string;
 
   @Column({ type: 'text', nullable: true })
   abstract?: string;
 
   @Column('text', { array: true, default: () => "'{}'" })
-  authors: string[];
+  authors!: string[];
 
   @Column({ type: 'text', nullable: true })
   venue?: string;
@@ -28,14 +28,14 @@ export class Paper {
   year?: number;
 
   @Column({ name: 'n_citation', type: 'int', default: DEFAULT_CITATION_COUNT })
-  nCitation: number;
+  nCitation!: number;
 
   @Column('text', { array: true, default: () => "'{}'" })
-  references: string[];
+  references!: string[];
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }
