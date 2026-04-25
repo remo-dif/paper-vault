@@ -27,13 +27,17 @@ export class PapersController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createPaperDto: CreatePaperDto): Promise<PaperResponseDto> {
+  async create(
+    @Body() createPaperDto: CreatePaperDto,
+  ): Promise<PaperResponseDto> {
     const paper = await this.papersService.create(createPaperDto);
     return this.toPaperResponse(paper);
   }
 
   @Get()
-  async findAll(@Query() query: ListPapersDto): Promise<PaginatedPapersResponseDto> {
+  async findAll(
+    @Query() query: ListPapersDto,
+  ): Promise<PaginatedPapersResponseDto> {
     const result = await this.papersService.findAll(query);
 
     return plainToInstance(

@@ -29,7 +29,8 @@ function validateEnv(config: Record<string, unknown>): Record<string, unknown> {
         type: 'postgres',
         url: configService.getOrThrow<string>('TYPEORM_URL'),
         autoLoadEntities: true,
-        synchronize: configService.get<string>('TYPEORM_SYNCHRONIZE') === 'true',
+        synchronize:
+          configService.get<string>('TYPEORM_SYNCHRONIZE') === 'true',
       }),
     }),
     PapersModule,

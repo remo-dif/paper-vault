@@ -1,3 +1,4 @@
+import { Transform, type TransformFnParams } from 'class-transformer';
 import {
   ArrayMaxSize,
   ArrayNotEmpty,
@@ -12,19 +13,22 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+
+function trimString({ value }: TransformFnParams): unknown {
+  return typeof value === 'string' ? value.trim() : value;
+}
 
 export class CreatePaperDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
   @MaxLength(500)
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Transform(trimString)
   title: string;
 
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Transform(trimString)
   abstract?: string;
 
   @IsArray()
@@ -36,7 +40,7 @@ export class CreatePaperDto {
   @IsOptional()
   @IsString()
   @MaxLength(500)
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Transform(trimString)
   venue?: string;
 
   @IsOptional()

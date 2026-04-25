@@ -16,9 +16,9 @@ export class PapersImportService {
     const batch: Partial<Paper>[] = [];
     let parsedRows = 0;
 
-    for await (const row of createReadStream(fullPath).pipe(csv()) as AsyncIterable<
-      Record<string, string>
-    >) {
+    for await (const row of createReadStream(fullPath).pipe(
+      csv(),
+    ) as AsyncIterable<Record<string, string>>) {
       try {
         batch.push(this.mapRowToPaper(row));
         parsedRows += 1;
@@ -73,7 +73,7 @@ export class PapersImportService {
     if (!raw || raw.trim() === '') return [];
     try {
       // Try to parse as JSON array first
-      const parsed = JSON.parse(raw);
+      const parsed: unknown = JSON.parse(raw);
       if (Array.isArray(parsed)) {
         return parsed.map((item) => String(item).trim()).filter(Boolean);
       }
@@ -88,7 +88,10 @@ export class PapersImportService {
     return [];
   }
 
-  private safeParseInt(value: unknown, defaultValue?: number): number | undefined {
+  private safeParseInt(
+    value: unknown,
+    defaultValue?: number,
+  ): number | undefined {
     const parsed = parseInt(String(value), 10);
     if (isNaN(parsed)) return defaultValue;
     return parsed;
