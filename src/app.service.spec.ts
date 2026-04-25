@@ -7,7 +7,10 @@ describe('AppService', () => {
     appService = new AppService();
   });
 
-  it('should return "Hello World!"', () => {
-    expect(appService.getHello()).toBe('Hello World!');
+  it('should return the API status', () => {
+    expect(appService.getStatus()).toEqual({
+      name: 'Paper Vault API',
+      status: 'ok',
+    });
   });
 });
