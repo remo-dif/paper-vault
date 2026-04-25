@@ -2,22 +2,29 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CreatePaperDto } from './create-paper.dto';
 import { Paper } from './paper.entity';
 import { PapersController } from './papers.controller';
+import {
+  DEFAULT_CITATION_COUNT,
+  DEFAULT_PAGE_LIMIT,
+  DEFAULT_PAGE_OFFSET,
+  PARSED_ROW_INCREMENT,
+} from './papers.constants';
 import { PapersService } from './papers.service';
 import { UpdatePaperDto } from './update-paper.dto';
 
 describe('PapersController', () => {
   let controller: PapersController;
   const mockId = '4ab3735c-80f1-472d-b953-fa0557fed28b';
+  const mockPaperTimestamp = new Date();
 
   const mockPaper: Paper = {
     id: mockId,
     title: 'Test Paper',
     authors: ['Author'],
     abstract: 'abstract',
-    nCitation: 0,
+    nCitation: DEFAULT_CITATION_COUNT,
     references: [],
-    createdAt: new Date('2026-01-01T00:00:00.000Z'),
-    updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+    createdAt: mockPaperTimestamp,
+    updatedAt: mockPaperTimestamp,
   } as Paper;
 
   const mockPapersService: jest.Mocked<
@@ -26,9 +33,9 @@ describe('PapersController', () => {
     create: jest.fn().mockResolvedValue(mockPaper),
     findAll: jest.fn().mockResolvedValue({
       data: [mockPaper],
-      limit: 25,
-      offset: 0,
-      total: 1,
+      limit: DEFAULT_PAGE_LIMIT,
+      offset: DEFAULT_PAGE_OFFSET,
+      total: PARSED_ROW_INCREMENT,
     }),
     findOne: jest.fn().mockResolvedValue(mockPaper),
     update: jest
@@ -64,13 +71,16 @@ describe('PapersController', () => {
 
   describe('findAll', () => {
     it('should return a paginated papers response', async () => {
-      const query = { limit: 25, offset: 0 };
+      const query = {
+        limit: DEFAULT_PAGE_LIMIT,
+        offset: DEFAULT_PAGE_OFFSET,
+      };
 
       await expect(controller.findAll(query)).resolves.toEqual({
         data: [mockPaper],
-        limit: 25,
-        offset: 0,
-        total: 1,
+        limit: DEFAULT_PAGE_LIMIT,
+        offset: DEFAULT_PAGE_OFFSET,
+        total: PARSED_ROW_INCREMENT,
       });
       expect(mockPapersService.findAll).toHaveBeenCalledWith(query);
     });

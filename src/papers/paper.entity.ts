@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { DEFAULT_CITATION_COUNT } from './papers.constants';
 
 @Entity('papers')
 export class Paper {
@@ -26,7 +27,7 @@ export class Paper {
   @Column({ type: 'int', nullable: true })
   year?: number;
 
-  @Column({ name: 'n_citation', type: 'int', default: 0 })
+  @Column({ name: 'n_citation', type: 'int', default: DEFAULT_CITATION_COUNT })
   nCitation: number;
 
   @Column('text', { array: true, default: () => "'{}'" })

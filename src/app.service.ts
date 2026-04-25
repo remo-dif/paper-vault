@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { APP_STATUS_RESPONSE } from './app.constants';
 
 @Injectable()
 export class AppService {
   public getStatus(): { name: string; status: string } {
-    return {
-      name: 'Paper Vault API',
-      status: 'ok',
-    };
+    return APP_STATUS_RESPONSE;
   }
 }

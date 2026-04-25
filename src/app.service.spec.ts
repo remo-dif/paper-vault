@@ -1,3 +1,4 @@
+import { APP_STATUS_RESPONSE } from './app.constants';
 import { AppService } from './app.service';
 
 describe('AppService', () => {
@@ -8,9 +9,6 @@ describe('AppService', () => {
   });
 
   it('should return the API status', () => {
-    expect(appService.getStatus()).toEqual({
-      name: 'Paper Vault API',
-      status: 'ok',
-    });
+    expect(appService.getStatus()).toEqual(APP_STATUS_RESPONSE);
   });
 });

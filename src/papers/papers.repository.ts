@@ -3,6 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, ILike, Repository } from 'typeorm';
 import { ListPapersDto, PaginatedPapersDto } from './list-papers.dto';
 import { Paper } from './paper.entity';
+import {
+  DEFAULT_PAGE_LIMIT,
+  DEFAULT_PAGE_OFFSET,
+  NO_AFFECTED_ROWS,
+} from './papers.constants';
 
 @Injectable()
 export class PapersRepository {
@@ -12,8 +17,8 @@ export class PapersRepository {
   ) {}
 
   async findPage(query: ListPapersDto): Promise<PaginatedPapersDto<Paper>> {
-    const limit = query.limit ?? 25;
-    const offset = query.offset ?? 0;
+    const limit = query.limit ?? DEFAULT_PAGE_LIMIT;
+    const offset = query.offset ?? DEFAULT_PAGE_OFFSET;
 
     if (query.author) {
       const qb = this.repository
@@ -51,12 +56,12 @@ export class PapersRepository {
 
   async update(id: string, paper: DeepPartial<Paper>): Promise<boolean> {
     const result = await this.repository.update(id, paper);
-    return result.affected !== 0;
+    return result.affected !== NO_AFFECTED_ROWS;
   }
 
   async delete(id: string): Promise<boolean> {
     const result = await this.repository.delete(id);
-    return result.affected !== 0;
+    return result.affected !== NO_AFFECTED_ROWS;
   }
 
   findByTitle(title: string): Promise<Paper[]> {

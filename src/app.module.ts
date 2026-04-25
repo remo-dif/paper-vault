@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DEFAULT_APP_PORT } from './app.constants';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PapersModule } from './papers/papers.module';
@@ -12,7 +13,7 @@ function validateEnv(config: Record<string, unknown>): Record<string, unknown> {
 
   return {
     ...config,
-    PORT: config.PORT ?? '3000',
+    PORT: config.PORT ?? String(DEFAULT_APP_PORT),
     TYPEORM_SYNCHRONIZE: config.TYPEORM_SYNCHRONIZE ?? 'false',
   };
 }

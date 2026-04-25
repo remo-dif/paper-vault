@@ -3,6 +3,14 @@ import * as csv from 'csv-parser';
 import { createReadStream } from 'node:fs';
 import { resolve } from 'node:path';
 import { Paper } from '../paper.entity';
+import {
+  DEFAULT_CITATION_COUNT,
+  DEFAULT_IMPORT_BATCH_SIZE,
+  EMPTY_BATCH_LENGTH,
+  INITIAL_PARSED_ROW_COUNT,
+  INTEGER_PARSE_RADIX,
+  PARSED_ROW_INCREMENT,
+} from '../papers.constants';
 import { PapersRepository } from '../papers.repository';
 
 @Injectable()
@@ -11,17 +19,20 @@ export class PapersImportService {
 
   constructor(private readonly papersRepository: PapersRepository) {}
 
-  async runImport(csvFilePath: string, batchSize = 500): Promise<void> {
+  async runImport(
+    csvFilePath: string,
+    batchSize = DEFAULT_IMPORT_BATCH_SIZE,
+  ): Promise<void> {
     const fullPath = this.resolveImportPath(csvFilePath);
     const batch: Partial<Paper>[] = [];
-    let parsedRows = 0;
+    let parsedRows = INITIAL_PARSED_ROW_COUNT;
 
     for await (const row of createReadStream(fullPath).pipe(
       csv(),
     ) as AsyncIterable<Record<string, string>>) {
       try {
         batch.push(this.mapRowToPaper(row));
-        parsedRows += 1;
+        parsedRows += PARSED_ROW_INCREMENT;
 
         if (batch.length >= batchSize) {
           await this.flushBatch(batch);
@@ -54,19 +65,21 @@ export class PapersImportService {
       abstract: row.abstract,
       venue: row.venue,
       year: this.safeParseInt(row.year),
-      nCitation: this.safeParseInt(row.n_citation, 0) ?? 0,
+      nCitation:
+        this.safeParseInt(row.n_citation, DEFAULT_CITATION_COUNT) ??
+        DEFAULT_CITATION_COUNT,
       authors: this.parseJsonArray(row.authors),
       references: this.parseJsonArray(row.references),
     };
   }
 
   private async flushBatch(batch: Partial<Paper>[]): Promise<void> {
-    if (batch.length === 0) {
+    if (batch.length === EMPTY_BATCH_LENGTH) {
       return;
     }
 
     await this.papersRepository.upsertMany(batch);
-    batch.length = 0;
+    batch.length = EMPTY_BATCH_LENGTH;
   }
 
   private parseJsonArray(raw: string): string[] {
@@ -92,7 +105,7 @@ export class PapersImportService {
     value: unknown,
     defaultValue?: number,
   ): number | undefined {
-    const parsed = parseInt(String(value), 10);
+    const parsed = parseInt(String(value), INTEGER_PARSE_RADIX);
     if (isNaN(parsed)) return defaultValue;
     return parsed;
   }

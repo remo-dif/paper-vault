@@ -13,6 +13,17 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
+import {
+  ALLOWED_FUTURE_YEAR_OFFSET,
+  AUTHORS_MAX_COUNT,
+  CITATION_MIN_VALUE,
+  REFERENCES_MAX_COUNT,
+  TITLE_MAX_LENGTH,
+  TITLE_MIN_LENGTH,
+  UUID_VERSION,
+  VENUE_MAX_LENGTH,
+  YEAR_MIN_VALUE,
+} from './papers.constants';
 
 function trimString({ value }: TransformFnParams): unknown {
   return typeof value === 'string' ? value.trim() : value;
@@ -21,8 +32,8 @@ function trimString({ value }: TransformFnParams): unknown {
 export class CreatePaperDto {
   @IsString()
   @IsNotEmpty()
-  @MinLength(1)
-  @MaxLength(500)
+  @MinLength(TITLE_MIN_LENGTH)
+  @MaxLength(TITLE_MAX_LENGTH)
   @Transform(trimString)
   title: string;
 
@@ -33,30 +44,30 @@ export class CreatePaperDto {
 
   @IsArray()
   @ArrayNotEmpty()
-  @ArrayMaxSize(200)
+  @ArrayMaxSize(AUTHORS_MAX_COUNT)
   @IsString({ each: true })
   authors: string[];
 
   @IsOptional()
   @IsString()
-  @MaxLength(500)
+  @MaxLength(VENUE_MAX_LENGTH)
   @Transform(trimString)
   venue?: string;
 
   @IsOptional()
   @IsInt()
-  @Min(0)
-  @Max(new Date().getFullYear() + 1)
+  @Min(YEAR_MIN_VALUE)
+  @Max(new Date().getFullYear() + ALLOWED_FUTURE_YEAR_OFFSET)
   year?: number;
 
   @IsOptional()
   @IsInt()
-  @Min(0)
+  @Min(CITATION_MIN_VALUE)
   nCitation?: number;
 
   @IsOptional()
   @IsArray()
-  @ArrayMaxSize(1000)
-  @IsUUID('4', { each: true })
+  @ArrayMaxSize(REFERENCES_MAX_COUNT)
+  @IsUUID(UUID_VERSION, { each: true })
   references?: string[];
 }

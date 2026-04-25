@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { APP_STATUS_RESPONSE } from './app.constants';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -16,10 +17,7 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should return the API status', () => {
-      expect(appController.getStatus()).toEqual({
-        name: 'Paper Vault API',
-        status: 'ok',
-      });
+      expect(appController.getStatus()).toEqual(APP_STATUS_RESPONSE);
     });
   });
 });

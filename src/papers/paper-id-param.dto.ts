@@ -1,6 +1,7 @@
 import { IsUUID } from 'class-validator';
+import { UUID_VERSION } from './papers.constants';
 
 export class PaperIdParamDto {
-  @IsUUID('4')
+  @IsUUID(UUID_VERSION)
   id: string;
 }
