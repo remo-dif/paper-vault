@@ -1,3 +1,5 @@
+import { PartialType } from '@nestjs/swagger';
+
 import { CreatePaperDto } from './create-paper.dto';
 
-export class UpdatePaperDto implements Partial<CreatePaperDto> {}
+export class UpdatePaperDto extends PartialType(CreatePaperDto) {}

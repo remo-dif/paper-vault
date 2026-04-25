@@ -11,8 +11,8 @@ describe('PapersImportService', () => {
         {
           provide: 'PaperRepository',
           useValue: {
-            runImport: jest.fn(), // Mock the method if needed
-          }, // Provide a mock implementation if needed
+            upsert: jest.fn(),
+          },
         },
       ],
     }).compile();
@@ -23,6 +23,4 @@ describe('PapersImportService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-  // Add more tests here to cover the functionality of PapersImportService
 });

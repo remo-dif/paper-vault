@@ -8,8 +8,10 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CreatePaperDto } from './create-paper.dto';
+import { ListPapersDto, PaginatedPapersDto } from './list-papers.dto';
 import { Paper } from './paper.entity';
 import { PapersService } from './papers.service';
 import { UpdatePaperDto } from './update-paper.dto';
@@ -25,8 +27,8 @@ export class PapersController {
   }
 
   @Get()
-  findAll(): Promise<Paper[]> {
-    return this.papersService.findAll();
+  findAll(@Query() query: ListPapersDto): Promise<PaginatedPapersDto<Paper>> {
+    return this.papersService.findAll(query);
   }
 
   @Get(':id')

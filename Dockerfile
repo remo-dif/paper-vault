@@ -36,8 +36,8 @@ WORKDIR /usr/src/app
 # Copy built files and dependencies from the development stage
 COPY --from=dev /usr/src/app/ .
 
-# Expose port 8080 for the application
-EXPOSE 8080
+# Expose the NestJS application port
+EXPOSE 3000
 
 # Start the application
 CMD [ "node", "dist/main" ]

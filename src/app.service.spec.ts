@@ -3,12 +3,8 @@ import { AppService } from './app.service';
 describe('AppService', () => {
   let appService: AppService;
 
-  const mockPapersImportService = {
-    runImport: jest.fn(),
-  };
-
   beforeEach(() => {
-    appService = new AppService(mockPapersImportService as any);
+    appService = new AppService();
   });
 
   it('should return "Hello World!"', () => {

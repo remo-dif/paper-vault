@@ -11,25 +11,25 @@ export class Paper {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 255 })
+  @Column({ type: 'text' })
   title: string;
 
-  @Column({ length: 255, nullable: true })
-  abstract: string;
+  @Column({ type: 'text', nullable: true })
+  abstract?: string;
 
-  @Column('simple-array')
+  @Column('text', { array: true, default: () => "'{}'" })
   authors: string[];
 
-  @Column({ length: 255, nullable: true })
+  @Column({ type: 'text', nullable: true })
   venue?: string;
 
   @Column({ type: 'int', nullable: true })
   year?: number;
 
-  @Column({ type: 'int', default: 0 })
-  n_citation: number;
+  @Column({ name: 'n_citation', type: 'int', default: 0 })
+  nCitation: number;
 
-  @Column('simple-array', { nullable: true })
+  @Column('text', { array: true, default: () => "'{}'" })
   references: string[];
 
   @CreateDateColumn()

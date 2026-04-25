@@ -18,7 +18,12 @@ describe('PapersController', () => {
 
   const mockPapersService = {
     create: jest.fn().mockResolvedValue(mockPaper),
-    findAll: jest.fn().mockResolvedValue([mockPaper]),
+    findAll: jest.fn().mockResolvedValue({
+      data: [mockPaper],
+      limit: 25,
+      offset: 0,
+      total: 1,
+    }),
     findOne: jest.fn().mockResolvedValue(mockPaper),
     update: jest
       .fn()
@@ -53,9 +58,16 @@ describe('PapersController', () => {
   });
 
   describe('findAll', () => {
-    it('should return an array of papers', async () => {
-      await expect(controller.findAll()).resolves.toEqual([mockPaper]);
-      expect(service.findAll).toHaveBeenCalled();
+    it('should return a paginated papers response', async () => {
+      const query = { limit: 25, offset: 0 };
+
+      await expect(controller.findAll(query)).resolves.toEqual({
+        data: [mockPaper],
+        limit: 25,
+        offset: 0,
+        total: 1,
+      });
+      expect(service.findAll).toHaveBeenCalledWith(query);
     });
   });
 
